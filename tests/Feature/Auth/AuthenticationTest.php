@@ -67,6 +67,5 @@ test('users can logout', function () {
     $component
         ->assertHasNoErrors()
         ->assertRedirect('/');
-
     $this->assertGuest();
 });
