@@ -9,15 +9,14 @@
 
             <!-- Navigation Links (desktop) -->
             <div class="hidden sm:flex sm:items-center sm:space-x-8">
-                <x-nav-link :href="route('dashboard.order.index')"
-                    :active="request()->routeIs('dashboard.order.index')">
-                    {{ __('Mulai Pesan') }}
+                <x-nav-link :href="route('mindashboard.order.index')" :active="request()->routeIs('mindashboard.order.index')">
+                    {{ __('Manage Pesanan') }}
                 </x-nav-link>
-                <x-nav-link :href="route('dashboard.location')" :active="request()->routeIs('dashboard.location')">
+                <x-nav-link :href="route('mindashboard.location')" :active="request()->routeIs('mindashboard.location')">
                     {{ __('Cek Lokasi') }}
                 </x-nav-link>
-                <x-nav-link :href="route('dashboard.payment')" :active="request()->routeIs('dashboard.payment')">
-                    {{ __('Pembayaran') }}
+                <x-nav-link :href="route('mindashboard.payment')" :active="request()->routeIs('mindashboard.payment')">
+                    {{ __('Pembayaran dan Invoice') }}
                 </x-nav-link>
             </div>
 
@@ -27,7 +26,7 @@
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700 transition">
-                            <span>{{ Auth::user()->name }}</span>
+                            <span>{{ Auth::user()->name }} (admin)</span>
                             <svg class="ml-1 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -35,7 +34,7 @@
                         </button>
                     </x-slot>
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">{{ __('Profile') }}</x-dropdown-link>
+                        <x-dropdown-link :href="route('minprofile.edit')">{{ __('Profile') }}</x-dropdown-link>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <x-dropdown-link href="{{ route('logout') }}"
@@ -69,15 +68,15 @@
     <!-- Mobile menu, show/hide based on menu state. -->
     <div x-show="open" x-transition class="sm:hidden bg-white border-t border-gray-200">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard.order.index')"
-                :active="request()->routeIs('dashboard.order.index')">
+            <x-responsive-nav-link :href="route('mindashboard.order.index')"
+                :active="request()->routeIs('mindashboard.order.index')">
                 {{ __('Mulai Pesan') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard.location')"
-                :active="request()->routeIs('dashboard.location')">
+            <x-responsive-nav-link :href="route('mindashboard.location')"
+                :active="request()->routeIs('mindashboard.location')">
                 {{ __('Cek Lokasi') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('dashboard.payment')" :active="request()->routeIs('dashboard.payment')">
+            <x-responsive-nav-link :href="route('mindashboard.payment')" :active="request()->routeIs('mindashboard.payment')">
                 {{ __('Pembayaran') }}
             </x-responsive-nav-link>
         </div>

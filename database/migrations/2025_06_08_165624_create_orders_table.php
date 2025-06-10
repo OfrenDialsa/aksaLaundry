@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('userId');
             $table->string('name'); // Nama user dari Auth
@@ -21,10 +21,12 @@ return new class extends Migration
             $table->integer('jaket')->nullable();
             $table->integer('gaun')->nullable();
             $table->integer('sprey_kasur')->nullable();
-            $table->integer('quantity')->nullable(); // Jumlah barang, untuk satuan
             $table->decimal('weight', 8, 2)->nullable(); // Berat kg, untuk kiloan
             $table->enum('delivery_option', ['antar', 'jemput']); // Antar atau jemput
+            $table->integer('total')->default(0);
             $table->enum('status', ['menunggu', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu');
+            $table->enum('status_pembayaran', ['unpaid', 'paid'])->default('unpaid');
+            $table->string('midtrans_order_id')->nullable()->unique();
             $table->timestamps();
         });
     }
@@ -34,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order');
+        Schema::dropIfExists('orders');
     }
 };

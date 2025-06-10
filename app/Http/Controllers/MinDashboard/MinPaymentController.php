@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\MinDashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\MinOrders;
 use App\Models\Orders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class PaymentController extends Controller
+class MinPaymentController extends Controller
 {
     public function index()
     {
-        $orders = Orders::where('userId', Auth::id())->latest()->get();
-        return view('dashboard.payment.index',compact('orders'));
+        $orders = Orders::latest()->get(); // Ambil semua order
+        return view('mindashboard.payment.index', compact('orders'));
     }
 
     // public function create()

@@ -1,18 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\MinDashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Orders;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class PaymentController extends Controller
+class MinLocationController extends Controller
 {
     public function index()
     {
-        $orders = Orders::where('userId', Auth::id())->latest()->get();
-        return view('dashboard.payment.index',compact('orders'));
+        return view('mindashboard.location.index');
     }
 
     // public function create()

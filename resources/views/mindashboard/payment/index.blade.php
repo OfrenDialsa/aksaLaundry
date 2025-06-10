@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-900 leading-tight">
             {{ __('Pembayaran') }}
@@ -19,16 +19,25 @@
                 </p>
 
                 <div class="bg-gray-50 rounded-xl border border-gray-300 p-4 text-sm space-y-3">
-                    <p class="flex justify-between">
-                        <span class="font-semibold text-gray-700">Invoice ID:</span>
-                        <span class="text-gray-900 font-mono truncate">{{ $order->midtrans_order_id ?? '-' }}</span>
-                    </p>
+                    <div class="text-gray-500 font-mono text-sm space-y-1">
+                        <p class="flex justify-between">
+                            <span>Invoice:</span>
+                            <span class="text-right truncate">{{ $order->midtrans_order_id ?? '-' }}</span>
+                        </p>
+                        <p class="flex justify-between">
+                            <span>User ID:</span>
+                            <span class="text-right truncate">{{ $order->userId ?? '-' }}</span>
+                        </p>
+                        <p class="flex justify-between">
+                            <span>Nama:</span>
+                            <span class="text-right truncate">{{ $order->name ?? '-' }}</span>
+                        </p>
+                    </div>
 
                     <p class="flex justify-between items-center">
                         <span class="font-semibold text-gray-700">Status Pembayaran:</span>
-                        <span
-                            class="px-3 py-1 rounded-full text-white text-xs font-semibold
-                            {{ $order->status_pembayaran === 'paid' ? 'bg-green-600' : 'bg-red-500' }}">
+                        <span class="px-3 py-1 rounded-full text-white text-xs font-semibold
+                                {{ $order->status_pembayaran === 'paid' ? 'bg-green-600' : 'bg-red-500' }}">
                             {{ ucfirst($order->status_pembayaran) }}
                         </span>
                     </p>
@@ -48,7 +57,8 @@
                             <p class="flex justify-between"><span>Gaun</span><span>{{ $order->gaun }} pcs</span></p>
                         @endif
                         @if($order->sprey_kasur)
-                            <p class="flex justify-between"><span>Sprei Kasur</span><span>{{ $order->sprey_kasur }} pcs</span></p>
+                            <p class="flex justify-between"><span>Sprei Kasur</span><span>{{ $order->sprey_kasur }} pcs</span>
+                            </p>
                         @endif
                     </div>
 
@@ -72,16 +82,25 @@
                 </p>
 
                 <div class="bg-gray-50 rounded-xl border border-gray-300 p-4 text-sm space-y-3">
-                    <p class="flex justify-between">
-                        <span class="font-semibold text-gray-700">Invoice ID:</span>
-                        <span class="text-gray-900 font-mono truncate">{{ $order->midtrans_order_id ?? '-' }}</span>
-                    </p>
+                    <div class="text-gray-500 font-mono text-sm space-y-1">
+                        <p class="flex justify-between">
+                            <span>Invoice:</span>
+                            <span class="text-right truncate">{{ $order->midtrans_order_id ?? '-' }}</span>
+                        </p>
+                        <p class="flex justify-between">
+                            <span>User ID:</span>
+                            <span class="text-right truncate">{{ $order->userId ?? '-' }}</span>
+                        </p>
+                        <p class="flex justify-between">
+                            <span>Nama:</span>
+                            <span class="text-right truncate">{{ $order->name ?? '-' }}</span>
+                        </p>
+                    </div>
 
                     <p class="flex justify-between items-center">
                         <span class="font-semibold text-gray-700">Status Pembayaran:</span>
-                        <span
-                            class="px-3 py-1 rounded-full text-white text-xs font-semibold
-                            {{ $order->status_pembayaran === 'paid' ? 'bg-green-600' : 'bg-red-500' }}">
+                        <span class="px-3 py-1 rounded-full text-white text-xs font-semibold
+                                {{ $order->status_pembayaran === 'paid' ? 'bg-green-600' : 'bg-red-500' }}">
                             {{ ucfirst($order->status_pembayaran) }}
                         </span>
                     </p>
@@ -101,4 +120,4 @@
             <p class="text-gray-500 italic select-none">Belum ada pesanan laundry kiloan.</p>
         @endforelse
     </section>
-</x-app-layout>
+</x-admin-layout>

@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Dashboard\LocationController;
+use App\Http\Controllers\MinDashboard\MinLocationController;
+use App\Http\Controllers\MinDashboard\MinOrderController;
+use App\Http\Controllers\MinDashboard\MinPaymentController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\WelcomePage\AboutController;
@@ -24,6 +27,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware('auth')->group(function () {
+    Route::get('/minprofile', [ProfileController::class, 'edit'])->name('minprofile.edit');
+    Route::patch('/minprofile', [ProfileController::class, 'update'])->name('minprofile.update');
+    Route::delete('/minprofile', [ProfileController::class, 'destroy'])->name('minprofile.destroy');
+});
+
 Route::prefix('welcome')->name('welcome.')->group(function () {
     Route::resource('/home', HomeController::class);
     Route::resource('/pricing', PricingController::class);
@@ -37,5 +46,10 @@ Route::prefix('dashboard')->name('dashboard.')->middleware(['auth', 'verified'])
     Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
 });
 
+Route::prefix('mindashboard')->name('mindashboard.')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('order', MinOrderController::class)->names('order');
+    Route::get('/location', [MinLocationController::class, 'index'])->name('location');
+    Route::get('/payment', [MinPaymentController::class, 'index'])->name('payment');
+});
 
 require __DIR__.'/auth.php';
