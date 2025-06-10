@@ -39,7 +39,7 @@
                         <a href="{{ url('/welcome/pricing') }}"
                             class="relative inline-block after:block after:h-[2px] font-medium after:bg-blue-300 after:origin-left after:transition-transform after:duration-300
                                 {{ request()->is('welcome/pricing') ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100' }}">
-                            Pricing
+                            Harga
                         </a>
 
                         <a href="{{ url('/welcome/faq') }}"
@@ -51,7 +51,7 @@
                         <a href="{{ url('/welcome/about') }}"
                             class="relative inline-block after:block after:h-[2px] font-medium after:bg-blue-300 after:origin-left after:transition-transform after:duration-300
                                 {{ request()->is('welcome/about') ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100' }}">
-                            About Us
+                            Tentang Kami
                         </a>
                     </div>
                 </div>

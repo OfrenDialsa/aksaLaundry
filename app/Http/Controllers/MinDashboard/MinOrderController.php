@@ -25,7 +25,7 @@ class MinOrderController extends Controller
         $order = Orders::findOrFail($id);
 
         $validated = $request->validate([
-            'status' => 'required|in:menunggu,diproses,selesai,dibatalkan',
+            'status' => 'required|in:menunggu,dijemput,diproses,selesai,dibatalkan',
         ]);
 
         $order->status = $validated['status'];

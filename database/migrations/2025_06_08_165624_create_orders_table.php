@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('weight', 8, 2)->nullable(); // Berat kg, untuk kiloan
             $table->enum('delivery_option', ['antar', 'jemput']); // Antar atau jemput
             $table->integer('total')->default(0);
-            $table->enum('status', ['menunggu', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu');
+            $table->enum('status', ['menunggu', 'dijemput', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu');
             $table->enum('status_pembayaran', ['unpaid', 'paid'])->default('unpaid');
             $table->string('midtrans_order_id')->nullable()->unique();
             $table->timestamps();

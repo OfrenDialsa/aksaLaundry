@@ -14,7 +14,7 @@
                     {{ __('Mulai Pesan') }}
                 </x-nav-link>
                 <x-nav-link :href="route('dashboard.location')" :active="request()->routeIs('dashboard.location')">
-                    {{ __('Cek Lokasi') }}
+                    {{ __('Lokasi AksaLaundry') }}
                 </x-nav-link>
                 <x-nav-link :href="route('dashboard.payment')" :active="request()->routeIs('dashboard.payment')">
                     {{ __('Pembayaran') }}

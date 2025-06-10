@@ -78,9 +78,9 @@
                                             <span class="ml-2">Antar</span>
                                         </label>
                                         <label class="inline-flex items-center">
-                                            <input type="radio" class="form-radio cursor-not-allowed"
-                                                @click.prevent="comingSoon" disabled>
-                                            <span class="ml-2 text-gray-400">Jemput (Coming Soon)</span>
+                                            <input type="radio" class="form-radio" name="delivery_option" value="jemput"
+                                                required>
+                                            <span class="ml-2">Jemput (+Rp 4.000)</span>
                                         </label>
                                     </div>
 
@@ -125,9 +125,9 @@
                                             <span class="ml-2">Antar</span>
                                         </label>
                                         <label class="inline-flex items-center">
-                                            <input type="radio" class="form-radio cursor-not-allowed"
-                                                @click.prevent="comingSoon" disabled>
-                                            <span class="ml-2 text-gray-400">Jemput (Coming Soon)</span>
+                                            <input type="radio" class="form-radio" name="delivery_option" value="jemput"
+                                                required>
+                                            <span class="ml-2">Jemput (+Rp 4.000)</span>
                                         </label>
                                     </div>
 
@@ -162,29 +162,49 @@
                     $satuanOrders = $orders->where('type', 'satuan');
                 @endphp
                 @forelse ($satuanOrders as $order)
+                    @php
+                        $statusColor = match ($order->status) {
+                            'menunggu' => 'from-amber-400 to-yellow-300',
+                            'dijemput' => 'from-orange-400 to-orange-300',
+                            'diproses' => 'from-sky-500 to-sky-300',
+                            'selesai' => 'from-emerald-500 to-green-300',
+                            'dibatalkan' => 'from-rose-400 to-red-300',
+                            default => 'from-gray-400 to-gray-300',
+                        };
+                    @endphp
                     <div
                         class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-xl font-semibold text-gray-800 tracking-wide">
-                                Laundry Satuan
-                            </h3>
-                            @if(in_array($order->status, ['menunggu', 'dibatalkan']))
-                                <form action="{{ route('dashboard.order.destroy', $order->id) }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex items-center space-x-1 text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        <span>Hapus</span>
-                                    </button>
-                                </form>
-                            @endif
+                        <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-6 h-6 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                                    </svg>
+                                    <h3 class="text-lg font-semibold tracking-wide">Laundry Satuan</h3>
+                                </div>
+
+                                @if(in_array($order->status, ['menunggu', 'dibatalkan']))
+                                    <form action="{{ route('dashboard.order.destroy', $order->id) }}" method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="flex items-center space-x-1 text-white/90 hover:text-red-500 text-sm font-medium transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                            <p class="font-mono text-xs tracking-wide text-white/80 truncate">
+                                {{ $order->midtrans_order_id ?? '-' }}
+                            </p>
                         </div>
-                        <p class="text-gray-500 font-mono text-sm truncate">{{ $order->midtrans_order_id ?? '-' }}</p>
 
                         <div class="text-sm text-gray-700 space-y-1">
                             @if($order->baju)
@@ -213,8 +233,7 @@
                         <p class="flex justify-between items-center font-semibold">
                             <span>Status:</span>
                             <span
-                                class="px-3 py-1 rounded-full text-white text-xs font-semibold
-                                                {{ $order->status === 'menunggu' ? 'bg-yellow-400' : ($order->status === 'diproses' ? 'bg-blue-500' : ($order->status === 'selesai' ? 'bg-green-600' : 'bg-gray-400')) }}">
+                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-amber-400' : ($order->status === 'dijemput' ? 'bg-orange-400' : ($order->status === 'diproses' ? 'bg-sky-500' : ($order->status === 'selesai' ? 'bg-emerald-500' : 'bg-rose-400'))) }}">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </p>
@@ -244,27 +263,48 @@
                     $kiloanOrders = $orders->where('type', 'kiloan');
                 @endphp
                 @forelse ($kiloanOrders as $order)
+                    @php
+                        $statusColor = match ($order->status) {
+                            'menunggu' => 'from-amber-400 to-yellow-300',
+                            'dijemput' => 'from-orange-400 to-orange-300',
+                            'diproses' => 'from-sky-500 to-sky-300',
+                            'selesai' => 'from-emerald-500 to-green-300',
+                            'dibatalkan' => 'from-rose-400 to-red-300',
+                            default => 'from-gray-400 to-gray-300',
+                        };
+                    @endphp
                     <div
                         class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-xl font-semibold text-gray-800 tracking-wide">
-                                Laundry Kiloan
-                            </h3>
-                            @if(in_array($order->status, ['menunggu', 'dibatalkan']))
-                                <form action="{{ route('dashboard.order.destroy', $order->id) }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex items-center space-x-1 text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        <span>Hapus</span>
-                                    </button>
-                                </form>
-                            @endif
+                        <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-6 h-6 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                                    </svg>
+                                    <h3 class="text-lg font-semibold tracking-wide">Laundry Kiloan</h3>
+                                </div>
+
+                                @if(in_array($order->status, ['menunggu', 'dibatalkan']))
+                                    <form action="{{ route('dashboard.order.destroy', $order->id) }}" method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="flex items-center space-x-1 text-white/90 hover:text-red-500 text-sm font-medium transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                            <p class="font-mono text-xs tracking-wide text-white/80 truncate">
+                                {{ $order->midtrans_order_id ?? '-' }}
+                            </p>
                         </div>
 
                         <p class="text-gray-500 font-mono text-sm truncate">{{ $order->midtrans_order_id ?? '-' }}</p>
@@ -282,8 +322,7 @@
                         <p class="flex justify-between items-center font-semibold">
                             <span>Status:</span>
                             <span
-                                class="px-3 py-1 rounded-full text-white text-xs font-semibold
-                                                {{ $order->status === 'menunggu' ? 'bg-yellow-400' : ($order->status === 'diproses' ? 'bg-blue-500' : ($order->status === 'selesai' ? 'bg-green-600' : 'bg-gray-400')) }}">
+                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-amber-400' : ($order->status === 'dijemput' ? 'bg-orange-400' : ($order->status === 'diproses' ? 'bg-sky-500' : ($order->status === 'selesai' ? 'bg-emerald-500' : 'bg-rose-400'))) }}">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </p>
@@ -317,36 +356,40 @@
         };
 
         function hitungTotal() {
-            // cek apakah form satuan yang aktif
-            const satuanForm = document.getElementById('baju'); // indikator ada input baju
-            const kiloanForm = document.querySelector('input[name="weight"]'); // input kiloan
+            const satuanForm = document.getElementById('baju');
+            const kiloanForm = document.querySelector('input[name="weight"]');
 
             let total = 0;
 
             if (satuanForm && !satuanForm.closest('[x-cloak][style*="display: none"]')) {
-                // jika form satuan tampil, hitung berdasarkan satuan
                 for (let item of ['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur']) {
                     let jumlah = parseInt(document.getElementById(item).value) || 0;
                     total += jumlah * harga[item];
                 }
-                document.getElementById('total').value = total.toLocaleString('id-ID', { useGrouping: false });
             } else if (kiloanForm && !kiloanForm.closest('[x-cloak][style*="display: none"]')) {
-                // jika form kiloan tampil, hitung berdasarkan berat
                 let berat = parseFloat(kiloanForm.value) || 0;
                 total = berat * harga.kiloan;
+            }
 
-                // cari input total jika ada (buat form kiloan bisa ada di modal lain)
-                let totalInput = document.querySelector('input[name="total"]');
-                if (totalInput) {
-                    totalInput.value = total.toLocaleString('id-ID', { useGrouping: false });
-                }
+            // Tambahkan biaya jemput jika dipilih
+            const deliveryOption = document.querySelector('input[name="delivery_option"]:checked');
+            if (deliveryOption && deliveryOption.value === 'jemput') {
+                total += 4000;
+            }
+
+            // Update field total
+            let totalInput = document.querySelector('input[name="total"]');
+            if (totalInput) {
+                totalInput.value = total.toLocaleString('id-ID', { useGrouping: false });
             }
         }
 
         document.addEventListener('input', (e) => {
-            // jalankan hitungTotal saat input berubah
-            if (['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur', 'weight'].includes(e.target.id) ||
-                e.target.name === 'weight') {
+            if (
+                ['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur', 'weight'].includes(e.target.id) ||
+                e.target.name === 'weight' ||
+                e.target.name === 'delivery_option'
+            ) {
                 hitungTotal();
             }
         });

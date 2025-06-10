@@ -17,41 +17,59 @@
                     $satuanOrders = $orders->where('type', 'satuan');
                 @endphp
                 @forelse ($satuanOrders as $order)
+                    @php
+                        $statusColor = match ($order->status) {
+                            'menunggu' => 'from-amber-400 to-yellow-300',
+                            'dijemput' => 'from-orange-400 to-orange-300',
+                            'diproses' => 'from-sky-500 to-sky-300',
+                            'selesai' => 'from-emerald-500 to-green-300',
+                            'dibatalkan' => 'from-rose-400 to-red-300',
+                            default => 'from-gray-400 to-gray-300',
+                        };
+                    @endphp
                     <div
                         class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-xl font-semibold text-gray-800 tracking-wide">
-                                Laundry Satuan
-                            </h3>
-                            @if(in_array($order->status, ['menunggu', 'selesai', 'dibatalkan']))
-                                <form action="{{ route('dashboard.order.destroy', $order->id) }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex items-center space-x-1 text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        <span>Hapus</span>
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
-                        <div class="text-gray-500 font-mono text-sm space-y-1">
-                            <p class="flex justify-between">
-                                <span>Invoice:</span>
-                                <span class="text-right truncate">{{ $order->midtrans_order_id ?? '-' }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span>User ID:</span>
-                                <span class="text-right truncate">{{ $order->userId ?? '-' }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span>Nama:</span>
-                                <span class="text-right truncate">{{ $order->name ?? '-' }}</span>
-                            </p>
+                        <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm rounded">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-6 h-6 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                                    </svg>
+                                    <h3 class="text-lg font-semibold tracking-wide">Laundry Kiloan</h3>
+                                </div>
+
+                                @if(in_array($order->status, ['menunggu', 'dibatalkan']))
+                                    <form action="{{ route('mindashboard.order.destroy', $order->id) }}" method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="flex items-center space-x-1 text-white/90 hover:text-red-500 text-sm font-medium transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                            <div class="text-white font-mono text-sm">
+                                <p class="flex justify-between">
+                                    <span>Invoice:</span>
+                                    <span class="text-right">{{ $order->midtrans_order_id ?? '-' }}</span>
+                                </p>
+                                <p class="flex justify-between">
+                                    <span>User ID:</span>
+                                    <span class="text-right">{{ $order->userId ?? '-' }}</span>
+                                </p>
+                                <p class="flex justify-between">
+                                    <span>Nama:</span>
+                                    <span class="text-right">{{ $order->name ?? '-' }}</span>
+                                </p>
+                            </div>
                         </div>
 
                         <div class="text-sm text-gray-700 space-y-1">
@@ -83,11 +101,19 @@
                             class="flex justify-between items-center font-semibold">
                             @csrf
                             @method('PUT')
-                            <label for="status" class="mr-2">Status:</label>
+                            <label for="status" class="mr-2">Update Status:</label>
                             <select name="status" onchange="this.form.submit()"
-                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-yellow-400' : ($order->status === 'diproses' ? 'bg-blue-500' : ($order->status === 'selesai' ? 'bg-green-600' : 'bg-gray-400')) }}">
+                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-amber-400' : ($order->status === 'dijemput' ? 'bg-orange-400' : ($order->status === 'diproses' ? 'bg-sky-500' : ($order->status === 'selesai' ? 'bg-emerald-500' : 'bg-rose-400'))) }}">
+
                                 <option value="menunggu" {{ $order->status === 'menunggu' ? 'selected' : '' }}>Menunggu
                                 </option>
+
+                                {{-- Hanya tampilkan jika antar/jemput = jemput --}}
+                                @if($order->delivery_option === 'jemput')
+                                    <option value="dijemput" {{ $order->status === 'dijemput' ? 'selected' : '' }}>Dijemput
+                                    </option>
+                                @endif
+
                                 <option value="diproses" {{ $order->status === 'diproses' ? 'selected' : '' }}>Diproses
                                 </option>
                                 <option value="selesai" {{ $order->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
@@ -121,43 +147,62 @@
                     $kiloanOrders = $orders->where('type', 'kiloan');
                 @endphp
                 @forelse ($kiloanOrders as $order)
+                    @php
+                        $statusColor = match ($order->status) {
+                            'menunggu' => 'from-amber-400 to-yellow-300',
+                            'dijemput' => 'from-orange-400 to-orange-300',
+                            'diproses' => 'from-sky-500 to-sky-300',
+                            'selesai' => 'from-emerald-500 to-green-300',
+                            'dibatalkan' => 'from-rose-400 to-red-300',
+                            default => 'from-gray-400 to-gray-300',
+                        };
+                    @endphp
                     <div
                         class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-xl font-semibold text-gray-800 tracking-wide">
-                                Laundry Kiloan
-                            </h3>
-                            @if(in_array($order->status, ['menunggu', 'selesai','dibatalkan']))
-                                <form action="{{ route('mindashboard.order.destroy', $order->id) }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex items-center space-x-1 text-red-600 hover:text-red-800 text-sm font-medium transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        <span>Hapus</span>
-                                    </button>
-                                </form>
-                            @endif
+                        <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm rounded">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-6 h-6 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                                    </svg>
+                                    <h3 class="text-lg font-semibold tracking-wide">Laundry Kiloan</h3>
+                                </div>
+
+                                @if(in_array($order->status, ['menunggu', 'dibatalkan']))
+                                    <form action="{{ route('mindashboard.order.destroy', $order->id) }}" method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="flex items-center space-x-1 text-white/90 hover:text-red-500 text-sm font-medium transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <span>Hapus</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                            <div class="text-white font-mono text-sm">
+                                <p class="flex justify-between">
+                                    <span>Invoice:</span>
+                                    <span class="text-right">{{ $order->midtrans_order_id ?? '-' }}</span>
+                                </p>
+                                <p class="flex justify-between">
+                                    <span>User ID:</span>
+                                    <span class="text-right">{{ $order->userId ?? '-' }}</span>
+                                </p>
+                                <p class="flex justify-between">
+                                    <span>Nama:</span>
+                                    <span class="text-right">{{ $order->name ?? '-' }}</span>
+                                </p>
+                            </div>
                         </div>
 
-                        <div class="text-gray-500 font-mono text-sm space-y-1">
-                            <p class="flex justify-between">
-                                <span>Invoice:</span>
-                                <span class="text-right truncate">{{ $order->midtrans_order_id ?? '-' }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span>User ID:</span>
-                                <span class="text-right truncate">{{ $order->userId ?? '-' }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span>Nama:</span>
-                                <span class="text-right truncate">{{ $order->name ?? '-' }}</span>
-                            </p>
-                        </div>
+
 
                         <p class="flex justify-between font-medium text-gray-700">
                             <span>Berat:</span>
@@ -173,11 +218,19 @@
                             class="flex justify-between items-center font-semibold">
                             @csrf
                             @method('PUT')
-                            <label for="status" class="mr-2">Status:</label>
+                            <label for="status" class="mr-2">Update Status:</label>
                             <select name="status" onchange="this.form.submit()"
-                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-yellow-400' : ($order->status === 'diproses' ? 'bg-blue-500' : ($order->status === 'selesai' ? 'bg-green-600' : 'bg-gray-400')) }}">
+                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-amber-400' : ($order->status === 'dijemput' ? 'bg-orange-400' : ($order->status === 'diproses' ? 'bg-sky-500' : ($order->status === 'selesai' ? 'bg-emerald-500' : 'bg-rose-400'))) }}">
+
                                 <option value="menunggu" {{ $order->status === 'menunggu' ? 'selected' : '' }}>Menunggu
                                 </option>
+
+                                {{-- Hanya tampilkan jika antar/jemput = jemput --}}
+                                @if($order->delivery_option === 'jemput')
+                                    <option value="dijemput" {{ $order->status === 'dijemput' ? 'selected' : '' }}>Dijemput
+                                    </option>
+                                @endif
+
                                 <option value="diproses" {{ $order->status === 'diproses' ? 'selected' : '' }}>Diproses
                                 </option>
                                 <option value="selesai" {{ $order->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
