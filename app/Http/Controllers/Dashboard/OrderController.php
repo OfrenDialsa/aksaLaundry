@@ -16,6 +16,12 @@ class OrderController extends Controller
         return view('dashboard.order.index', compact('orders'));
     }
 
+    public function show($id)
+    {
+        $order = Orders::where('id', $id)->where('userId', Auth::id())->firstOrFail();
+        return view('dashboard.order.show', compact('order'));
+    }
+
     public function store(Request $request)
     {
 
@@ -28,20 +34,35 @@ class OrderController extends Controller
                 'gaun' => 'nullable|integer',
                 'sprey_kasur' => 'nullable|integer',
                 'delivery_option' => 'required|in:antar,jemput',
-                'total' => 'required|integer|min:1'
+                'service_type' => 'required|in:cuci,setrika,cuci_setrika',
+                'description' => 'nullable|string',
+                'total' => 'required|integer|min:1',
+                'latitude' => 'nullable|string',
+                'longitude' => 'nullable|string'
             ]);
         } elseif ($request->type === 'kiloan') {
             $validated = $request->validate([
                 'type' => 'required|in:satuan,kiloan',
                 'weight' => 'required|numeric|min:0.1',
                 'delivery_option' => 'required|in:antar,jemput',
-                'total' => 'required|integer|min:1'
+                'service_type' => 'required|in:cuci,setrika,cuci_setrika',
+                'description' => 'nullable|string',
+                'total' => 'required|integer|min:1',
+                'latitude' => 'nullable|string',
+                'longitude' => 'nullable|string'
+            ]);
+        }
+
+        if ($request->delivery_option === 'jemput') {
+            $request->validate([
+                'latitude' => 'required|string',
+                'longitude' => 'required|string'
             ]);
         }
 
         $validated['userId'] = Auth::id();
         $validated['name'] = Auth::user()->name;
-        
+
         // Simpan order awal dulu untuk mendapatkan ID
         $order = Orders::create($validated);
 

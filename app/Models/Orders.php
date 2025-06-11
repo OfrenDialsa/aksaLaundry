@@ -18,8 +18,12 @@ class Orders extends Model
         'sprey_kasur',
         'weight',
         'delivery_option',
+        'service_type',
+        'description',
         'total',
         'midtrans_order_id',
+        'latitude',
+        'longitude'
     ];
 
     public function user()

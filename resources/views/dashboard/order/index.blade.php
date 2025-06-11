@@ -33,13 +33,15 @@
                     <div @click.away="showForm = null" class="bg-white w-full max-w-lg mx-4 p-6 rounded-lg shadow-lg">
 
                         <!-- Form Satuan -->
-                        <template x-if="showForm === 'satuan'">
+                        <template x-if="showForm === 'satuan'" x-effect="if (showForm === 'satuan') resetForm()">
                             <div
                                 x-init="$nextTick(() => {['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur'].forEach(id => {document.getElementById(id).addEventListener('input', hitungTotal);});hitungTotal();})">
                                 <h3 class="text-lg font-semibold mb-4">Form Laundry Satuan</h3>
-                                <form method="POST" action="{{ route('dashboard.order.store') }}">
+                                <form method="POST" action="{{ route('dashboard.order.store') }}" class="cucianForm">
                                     @csrf
                                     <input type="hidden" name="type" value="satuan">
+                                    <input type="hidden" name="latitude" id="latitude" x-model="latitude">
+                                    <input type="hidden" name="longitude" id="longitude" x-model="longitude">
 
                                     <!-- Jenis Pakaian -->
                                     <div class="mb-4 flex items-center">
@@ -69,19 +71,60 @@
                                             class="flex-1 border rounded p-2">
                                     </div>
 
+                                    <!-- Pilihan Layanan -->
+                                    <div class="mb-4">
+                                        <label class="block text-gray-700 mb-1">Pilih Layanan</label>
+                                        <div class="flex items-center space-x-6">
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="service_type" value="cuci"
+                                                    required>
+                                                <span class="ml-2">Cuci Saja</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="service_type"
+                                                    value="setrika" required>
+                                                <span class="ml-2">Setrika Saja</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="service_type"
+                                                    value="cuci_setrika" required>
+                                                <span class="ml-2">Cuci & Setrika</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
                                     <!-- Antar/Jemput -->
-                                    <div class="mb-4 flex items-center justify-between">
-                                        <span class="block text-gray-700 mb-1">Antar/Jemput</span>
-                                        <label class="inline-flex items-center mr-4">
-                                            <input type="radio" class="form-radio" name="delivery_option" value="antar"
-                                                required>
-                                            <span class="ml-2">Antar</span>
-                                        </label>
-                                        <label class="inline-flex items-center">
-                                            <input type="radio" class="form-radio" name="delivery_option" value="jemput"
-                                                required>
-                                            <span class="ml-2">Jemput (+Rp 4.000)</span>
-                                        </label>
+                                    <div class="mb-4">
+                                        <div class="flex items-center justify-between">
+                                            <span class="block text-gray-700 mb-1">Antar/Jemput</span>
+                                            <label class="inline-flex items-center mr-4">
+                                                <input type="radio" class="form-radio" name="delivery_option"
+                                                    value="antar" required x-model="delivery_option"
+                                                    @change="if (delivery_option === 'antar') resetPosition()">
+                                                <span class="ml-2">Antar</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="delivery_option"
+                                                    value="jemput" required x-model="delivery_option"
+                                                    @change="if (delivery_option === 'jemput') getLocation()">
+                                                <span class="ml-2">Jemput (+Rp 4.000)</span>
+                                            </label>
+                                        </div>
+                                        <!-- Informational Text -->
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            <span class="font-semibold text-blue-500">(i)</span> Jika memilih opsi
+                                            <strong>jemput</strong>, maka sistem akan melacak lokasi anda saat ini saat
+                                            menekan tombol kirim.
+                                        </p>
+                                    </div>
+
+                                    <!-- Deskripsi Tambahan -->
+                                    <div class="mb-4">
+                                        <label for="description" class="block text-gray-700 font-semibold">Catatan /
+                                            Deskripsi Tambahan</label>
+                                        <textarea name="description" id="description" rows="3"
+                                            class="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+                                            placeholder="Contoh: Harap disetrika halus, pakaian dimasukkan plastik terpisah..."></textarea>
                                     </div>
 
                                     <!-- Hasil Total -->
@@ -101,14 +144,15 @@
                             </div>
                         </template>
 
-
                         <!-- Form Kiloan -->
-                        <template x-if="showForm === 'kiloan'">
+                        <template x-if="showForm === 'kiloan'" x-effect="if (showForm === 'kiloan') resetForm()">
                             <div>
                                 <h3 class="text-lg font-semibold mb-4">Form Laundry Kiloan</h3>
-                                <form method="POST" action="{{ route('dashboard.order.store') }}">
+                                <form method="POST" action="{{ route('dashboard.order.store') }}" class="cucianForm">
                                     @csrf
                                     <input type="hidden" name="type" value="kiloan">
+                                    <input type="hidden" name="latitude" id="latitude" x-model="latitude">
+                                    <input type="hidden" name="longitude" id="longitude" x-model="longitude">
 
                                     <div class="mb-4 flex items-center">
                                         <label class="block text-gray-700">Berat(kg) </label>
@@ -116,19 +160,60 @@
                                             placeholder="Masukkan berat" required>
                                     </div>
 
+                                    <!-- Pilihan Layanan -->
+                                    <div class="mb-4 lex items-center justify-between">
+                                        <label class="block text-gray-700 mb-1">Pilih Layanan</label>
+                                        <div class="flex items-center space-x-6">
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="service_type" value="cuci"
+                                                    required>
+                                                <span class="ml-2">Cuci Saja</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="service_type"
+                                                    value="setrika" required>
+                                                <span class="ml-2">Setrika Saja</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="service_type"
+                                                    value="cuci_setrika" required>
+                                                <span class="ml-2">Cuci & Setrika</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
                                     <!-- Antar/Jemput -->
-                                    <div class="mb-4 flex items-center justify-between">
-                                        <span class="block text-gray-700 mb-1">Antar/Jemput</span>
-                                        <label class="inline-flex items-center mr-4">
-                                            <input type="radio" class="form-radio" name="delivery_option" value="antar"
-                                                required>
-                                            <span class="ml-2">Antar</span>
-                                        </label>
-                                        <label class="inline-flex items-center">
-                                            <input type="radio" class="form-radio" name="delivery_option" value="jemput"
-                                                required>
-                                            <span class="ml-2">Jemput (+Rp 4.000)</span>
-                                        </label>
+                                    <div class="mb-4">
+                                        <div class="flex items-center justify-between">
+                                            <span class="block text-gray-700 mb-1">Antar/Jemput</span>
+                                            <label class="inline-flex items-center mr-4">
+                                                <input type="radio" class="form-radio" name="delivery_option"
+                                                    value="antar" required x-model="delivery_option"
+                                                    @change="if (delivery_option === 'antar') resetPosition()">
+                                                <span class="ml-2">Antar</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" class="form-radio" name="delivery_option"
+                                                    value="jemput" required x-model="delivery_option"
+                                                    @change="if (delivery_option === 'jemput') getLocation()">
+                                                <span class="ml-2">Jemput (+Rp 4.000)</span>
+                                            </label>
+                                        </div>
+                                        <!-- Informational Text -->
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            <span class="font-semibold text-blue-500">(i)</span> Jika memilih opsi
+                                            <strong>jemput</strong>, maka sistem akan melacak lokasi anda saat ini saat
+                                            menekan tombol kirim.
+                                        </p>
+                                    </div>
+
+                                    <!-- Deskripsi Tambahan -->
+                                    <div class="mb-4">
+                                        <label for="description" class="block text-gray-700 font-semibold">Catatan /
+                                            Deskripsi Tambahan</label>
+                                        <textarea name="description" id="description" rows="3"
+                                            class="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+                                            placeholder="Contoh: Harap disetrika halus, pakaian dimasukkan plastik terpisah..."></textarea>
                                     </div>
 
                                     <!-- Hasil Total -->
@@ -154,14 +239,10 @@
     </x-slot>
 
     <div class="w-full p-6 mt-5 space-y-10">
-        <!-- Section for Satuan Orders -->
         <div>
-            <h2 class="text-2xl font-semibold mb-6 text-gray-900 border-b pb-2">Pesanan Laundry Satuan</h2>
+            <h2 class="text-2xl font-semibold mb-6 text-gray-900 border-b pb-2">Semua Pesanan Laundry</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @php
-                    $satuanOrders = $orders->where('type', 'satuan');
-                @endphp
-                @forelse ($satuanOrders as $order)
+                @forelse ($orders as $order)
                     @php
                         $statusColor = match ($order->status) {
                             'menunggu' => 'from-amber-400 to-yellow-300',
@@ -171,7 +252,10 @@
                             'dibatalkan' => 'from-rose-400 to-red-300',
                             default => 'from-gray-400 to-gray-300',
                         };
+
+                        $orderTypeLabel = $order->type === 'satuan' ? 'Laundry Satuan' : 'Laundry Kiloan';
                     @endphp
+
                     <div
                         class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
                         <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm">
@@ -182,7 +266,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
                                     </svg>
-                                    <h3 class="text-lg font-semibold tracking-wide">Laundry Satuan</h3>
+                                    <h3 class="text-lg font-semibold tracking-wide">{{ $orderTypeLabel }}</h3>
                                 </div>
 
                                 @if(in_array($order->status, ['menunggu', 'dibatalkan']))
@@ -206,112 +290,35 @@
                             </p>
                         </div>
 
-                        <div class="text-sm text-gray-700 space-y-1">
-                            @if($order->baju)
-                                <p class="flex justify-between"><span>Baju:</span> <span>{{ $order->baju }} pcs</span></p>
-                            @endif
-                            @if($order->celana)
-                                <p class="flex justify-between"><span>Celana:</span> <span>{{ $order->celana }} pcs</span></p>
-                            @endif
-                            @if($order->jaket)
-                                <p class="flex justify-between"><span>Jaket:</span> <span>{{ $order->jaket }} pcs</span></p>
-                            @endif
-                            @if($order->gaun)
-                                <p class="flex justify-between"><span>Gaun:</span> <span>{{ $order->gaun }} pcs</span></p>
-                            @endif
-                            @if($order->sprey_kasur)
-                                <p class="flex justify-between"><span>Sprei Kasur:</span> <span>{{ $order->sprey_kasur }}
-                                        pcs</span></p>
-                            @endif
-                        </div>
-
-                        <p class="flex justify-between font-medium text-gray-700">
-                            <span>Antar/Jemput:</span>
-                            <span>{{ ucfirst($order->delivery_option) }}</span>
-                        </p>
-
-                        <p class="flex justify-between items-center font-semibold">
-                            <span>Status:</span>
-                            <span
-                                class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-amber-400' : ($order->status === 'dijemput' ? 'bg-orange-400' : ($order->status === 'diproses' ? 'bg-sky-500' : ($order->status === 'selesai' ? 'bg-emerald-500' : 'bg-rose-400'))) }}">
-                                {{ ucfirst($order->status) }}
-                            </span>
-                        </p>
-
-                        <p class="flex justify-between font-semibold text-gray-900 text-lg">
-                            <span>Total:</span>
-                            <span>Rp {{ number_format($order->total, 0, ',', '.') }}</span>
-                        </p>
-
-                        <p class="text-gray-400 text-xs text-right italic">
-                            {{ $order->created_at->format('d M Y, H:i') }}
-                        </p>
-                    </div>
-                @empty
-                    <div class="col-span-4 text-center text-gray-500 italic select-none">
-                        Belum ada pesanan laundry satuan.
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        <!-- Section for Kiloan Orders -->
-        <div>
-            <h2 class="text-2xl font-semibold mb-6 text-gray-900 border-b pb-2">Pesanan Laundry Kiloan</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @php
-                    $kiloanOrders = $orders->where('type', 'kiloan');
-                @endphp
-                @forelse ($kiloanOrders as $order)
-                    @php
-                        $statusColor = match ($order->status) {
-                            'menunggu' => 'from-amber-400 to-yellow-300',
-                            'dijemput' => 'from-orange-400 to-orange-300',
-                            'diproses' => 'from-sky-500 to-sky-300',
-                            'selesai' => 'from-emerald-500 to-green-300',
-                            'dibatalkan' => 'from-rose-400 to-red-300',
-                            default => 'from-gray-400 to-gray-300',
-                        };
-                    @endphp
-                    <div
-                        class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-                        <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex items-center space-x-2">
-                                    <svg class="w-6 h-6 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
-                                    </svg>
-                                    <h3 class="text-lg font-semibold tracking-wide">Laundry Kiloan</h3>
-                                </div>
-
-                                @if(in_array($order->status, ['menunggu', 'dibatalkan']))
-                                    <form action="{{ route('dashboard.order.destroy', $order->id) }}" method="POST"
-                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="flex items-center space-x-1 text-white/90 hover:text-red-500 text-sm font-medium transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                            <span>Hapus</span>
-                                        </button>
-                                    </form>
+                        @if($order->type === 'satuan')
+                            <div class="text-sm text-gray-700 space-y-1">
+                                @if($order->baju)
+                                    <p class="flex justify-between"><span>Baju:</span> <span>{{ $order->baju }} pcs</span></p>
+                                @endif
+                                @if($order->celana)
+                                    <p class="flex justify-between"><span>Celana:</span> <span>{{ $order->celana }} pcs</span></p>
+                                @endif
+                                @if($order->jaket)
+                                    <p class="flex justify-between"><span>Jaket:</span> <span>{{ $order->jaket }} pcs</span></p>
+                                @endif
+                                @if($order->gaun)
+                                    <p class="flex justify-between"><span>Gaun:</span> <span>{{ $order->gaun }} pcs</span></p>
+                                @endif
+                                @if($order->sprey_kasur)
+                                    <p class="flex justify-between"><span>Sprei Kasur:</span> <span>{{ $order->sprey_kasur }}
+                                            pcs</span></p>
                                 @endif
                             </div>
-                            <p class="font-mono text-xs tracking-wide text-white/80 truncate">
-                                {{ $order->midtrans_order_id ?? '-' }}
+                        @elseif($order->type === 'kiloan')
+                            <p class="flex justify-between font-medium text-gray-700">
+                                <span>Berat:</span>
+                                <span>{{ $order->weight }} kg</span>
                             </p>
-                        </div>
-
-                        <p class="text-gray-500 font-mono text-sm truncate">{{ $order->midtrans_order_id ?? '-' }}</p>
+                        @endif
 
                         <p class="flex justify-between font-medium text-gray-700">
-                            <span>Berat:</span>
-                            <span>{{ $order->weight }} kg</span>
+                            <span>Layanan:</span>
+                            <span>{{ ucfirst(str_replace('_', ' ', $order->service_type)) }}</span>
                         </p>
 
                         <p class="flex justify-between font-medium text-gray-700">
@@ -332,53 +339,100 @@
                             <span>Rp {{ number_format($order->total, 0, ',', '.') }}</span>
                         </p>
 
-                        <p class="text-gray-400 text-xs text-right italic">
-                            {{ $order->created_at->format('d M Y, H:i') }}
+                        <p class="text-xs text-gray-500 italic">
+                            {{ $order->description }}
                         </p>
+
+                        <div class="flex justify-between items-center text-xs text-gray-400 italic">
+                            <a href="{{ route('dashboard.order.show', $order->id) }}"
+                                class="text-blue-500 hover:underline font-medium not-italic">
+                                Lihat Detail
+                            </a>
+
+                            <p class="text-right">
+                                {{ $order->created_at->format('d M Y, H:i') }}
+                            </p>
+                        </div>
                     </div>
                 @empty
                     <div class="col-span-4 text-center text-gray-500 italic select-none">
-                        Belum ada pesanan laundry kiloan.
+                        Belum ada pesanan laundry.
                     </div>
                 @endforelse
             </div>
         </div>
     </div>
-
+    
     <script>
         const harga = {
-            baju: 5000,
-            celana: 6000,
-            jaket: 8000,
-            gaun: 10000,
-            sprey_kasur: 12000,
-            kiloan: 16000 // harga per kilo
+            satuan: {
+                cuci: {
+                    baju: 5000,
+                    celana: 6000,
+                    jaket: 8000,
+                    gaun: 10000,
+                    sprey_kasur: 12000
+                },
+                setrika: {
+                    baju: 3000,
+                    celana: 4000,
+                    jaket: 5000,
+                    gaun: 6000,
+                    sprey_kasur: 8000
+                }
+            },
+            kiloan: {
+                cuci: 16000,
+                setrika: 12000
+            }
         };
 
         function hitungTotal() {
             const satuanForm = document.getElementById('baju');
             const kiloanForm = document.querySelector('input[name="weight"]');
+            const serviceType = document.querySelector('input[name="service_type"]:checked');
 
             let total = 0;
 
-            if (satuanForm && !satuanForm.closest('[x-cloak][style*="display: none"]')) {
-                for (let item of ['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur']) {
-                    let jumlah = parseInt(document.getElementById(item).value) || 0;
-                    total += jumlah * harga[item];
-                }
-            } else if (kiloanForm && !kiloanForm.closest('[x-cloak][style*="display: none"]')) {
-                let berat = parseFloat(kiloanForm.value) || 0;
-                total = berat * harga.kiloan;
+            // Default layanan adalah cuci
+            let layanan = 'cuci';
+            if (serviceType) {
+                layanan = serviceType.value;
             }
 
-            // Tambahkan biaya jemput jika dipilih
+            // Hitung satuan
+            if (satuanForm && !satuanForm.closest('[x-cloak][style*="display: none"]')) {
+                const jenis = ['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur'];
+
+                for (let item of jenis) {
+                    const jumlah = parseInt(document.getElementById(item).value) || 0;
+
+                    if (layanan === 'cuci' || layanan === 'setrika') {
+                        total += jumlah * harga.satuan[layanan][item];
+                    } else if (layanan === 'cuci_setrika') {
+                        total += jumlah * (harga.satuan.cuci[item] + harga.satuan.setrika[item]);
+                    }
+                }
+
+                // Hitung kiloan
+            } else if (kiloanForm && !kiloanForm.closest('[x-cloak][style*="display: none"]')) {
+                const berat = parseFloat(kiloanForm.value) || 0;
+
+                if (layanan === 'cuci' || layanan === 'setrika') {
+                    total = berat * harga.kiloan[layanan];
+                } else if (layanan === 'cuci_setrika') {
+                    total = berat * (harga.kiloan.cuci + harga.kiloan.setrika);
+                }
+            }
+
+            // Tambahkan biaya jemput
             const deliveryOption = document.querySelector('input[name="delivery_option"]:checked');
             if (deliveryOption && deliveryOption.value === 'jemput') {
                 total += 4000;
             }
 
             // Update field total
-            let totalInput = document.querySelector('input[name="total"]');
+            const totalInput = document.querySelector('input[name="total"]');
             if (totalInput) {
                 totalInput.value = total.toLocaleString('id-ID', { useGrouping: false });
             }
@@ -388,6 +442,7 @@
             if (
                 ['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur', 'weight'].includes(e.target.id) ||
                 e.target.name === 'weight' ||
+                e.target.name === 'service_type' ||
                 e.target.name === 'delivery_option'
             ) {
                 hitungTotal();
@@ -403,5 +458,37 @@
             });
             hitungTotal();
         });
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    document.querySelector('.cucianForm input[name="latitude"]').value = position.coords.latitude;
+                    document.querySelector('.cucianForm input[name="longitude"]').value = position.coords.longitude;
+
+                }, function () {
+                    alert('Gagal mendapatkan lokasi.');
+                });
+            } else {
+                alert('Geolocation tidak didukung.');
+            }
+        }
+
+        function resetForm() {
+            const form = document.querySelector('.cucianForm');
+            if (form) {
+                form.reset();
+                form.querySelector('input[name=latitude]').value = '';
+                form.querySelector('input[name=longitude]').value = '';
+            }
+            this.delivery_option = '';
+        }
+
+        function resetPosition() {
+            const form = document.querySelector('.cucianForm');
+            if (form) {
+                form.querySelector('input[name=latitude]').value = '';
+                form.querySelector('input[name=longitude]').value = '';
+            }
+        }
     </script>
 </x-app-layout>
