@@ -20,6 +20,12 @@ class MinOrderController extends Controller
         return view('mindashboard.order.edit', compact('order'));
     }
 
+    public function show($id)
+    {
+        $order = Orders::where('id', $id)->firstOrFail();
+        return view('mindashboard.order.show', compact('order'));
+    }
+
     public function update(Request $request, $id)
     {
         $order = Orders::findOrFail($id);
