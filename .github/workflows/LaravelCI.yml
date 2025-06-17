@@ -2,9 +2,9 @@ name: Laravel CI
 
 on:
   push:
-    branches: [ "breeze-setup" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "breeze-setup" ]
+    branches: [ "main" ]
 
 jobs:
   laravel-tests:
