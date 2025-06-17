@@ -3,24 +3,19 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Orders;
+use Illuminate\Support\Facades\Auth;
 
 class LocationController extends Controller
 {
     public function index()
     {
-        return view('dashboard.location.index');
+        $orders = Orders::where('delivery_option', 'jemput')
+            ->where('userId', Auth::id()) // Ganti dengan 'admin_id' jika perlu
+            ->whereNotIn('status', ['selesai'])
+            ->latest()
+            ->get();
+
+        return view('dashboard.location.index', compact('orders'));
     }
-
-    // public function create()
-    // {
-    //     return view('dashboard.orders.create');
-    // }
-
-    // public function store(Request $request)
-    // {
-    //     // Validate and save
-    // }
-
-    // Add more methods as needed (edit, update, destroy...)
 }

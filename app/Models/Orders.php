@@ -22,6 +22,8 @@ class Orders extends Model
         'description',
         'total',
         'midtrans_order_id',
+        'status_pembayaran',
+        'status',           
         'latitude',
         'longitude'
     ];
