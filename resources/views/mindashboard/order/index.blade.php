@@ -1,169 +1,192 @@
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Manage Pesanan Customer!!') }}
-            </h2>
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ __('Ayo Cuci Laundry') }}
+                </h2>
+                <p class="text-xs text-gray-400">*Pesanan tidak akan diproses sebelum <span class="text-red-500">pembayaran</span></p>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center gap-2 text-gray-600 font-medium">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="1.5"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                    <span>Tambahkan pesanan:</span>
+                </div>
+                <a href="{{ route('mindashboard.order.create') }}"
+                    class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-xl shadow-sm hover:shadow-md transition duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                    Kiloan
+                </a>
+            </div>
         </div>
     </x-slot>
 
+    <div class="w-full p-4 sm:p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {{-- Sidebar Filter --}}
+            <div class="md:col-span-1 w-full bg-white p-4 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Filter Pesanan</h3>
 
-    <div class="w-full p-6 space-y-10">
-        <!-- Section for Satuan Orders -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            @php
-                $satuanOrders = $orders;
-            @endphp
-            @forelse ($satuanOrders as $order)
-                @php
-                    $statusColor = match ($order->status) {
-                        'menunggu' => 'from-amber-400 to-yellow-300',
-                        'dijemput' => 'from-orange-400 to-orange-300',
-                        'diproses' => 'from-sky-500 to-sky-300',
-                        'selesai' => 'from-emerald-500 to-green-300',
-                        'dibatalkan' => 'from-rose-400 to-red-300',
-                        default => 'from-gray-400 to-gray-300',
-                    };
+                <form method="GET" action="{{ route('mindashboard.order.index') }}" class="space-y-4">
+                    @php $statuses = ['menunggu', 'dijemput', 'diproses', 'selesai', 'dibatalkan']; @endphp
 
-                    $orderTypeLabel = $order->type === 'satuan' ? 'Laundry Satuan' : 'Laundry Kiloan';
-                @endphp
-                <div
-                    class="bg-white rounded-2xl shadow-lg p-5 space-y-4 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-                    <div class="bg-gradient-to-r {{ $statusColor }} text-white p-5 shadow-sm rounded">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-6 h-6 text-white/80" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 6l3 1 2.5-2.5L16 9l2-2 3 3v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
-                                </svg>
-                                <h3 class="text-lg font-semibold tracking-wide">{{ $orderTypeLabel }}</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        {{-- Status --}}
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Status</h4>
+                            <div class="space-y-2">
+                                @foreach ($statuses as $status)
+                                    <label class="flex items-center space-x-2 text-sm">
+                                        <input type="checkbox" name="status[]" value="{{ $status }}"
+                                            {{ in_array($status, request()->get('status', [])) ? 'checked' : '' }}
+                                            class="form-checkbox text-blue-600 border-gray-300">
+                                        <span class="capitalize text-gray-700">{{ $status }}</span>
+                                    </label>
+                                @endforeach
                             </div>
-
-                            @if(in_array($order->status, ['menunggu', 'dibatalkan']))
-                                <form action="{{ route('mindashboard.order.destroy', $order->id) }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex items-center space-x-1 text-white/90 hover:text-red-500 text-sm font-medium transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        <span>Hapus</span>
-                                    </button>
-                                </form>
-                            @endif
                         </div>
-                        <div class="text-white font-mono text-sm">
-                            <p class="flex justify-between">
-                                <span>Invoice:</span>
-                                <span class="text-right">{{ $order->midtrans_order_id ?? '-' }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span>User ID:</span>
-                                <span class="text-right">{{ $order->userId ?? '-' }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span>Nama:</span>
-                                <span class="text-right">{{ $order->name ?? '-' }}</span>
-                            </p>
+
+                        {{-- Jenis Pesanan --}}
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-700 mb-2">Jenis Pesanan</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-2 text-sm">
+                                    <input type="radio" name="type" value="kiloan"
+                                        {{ request('type') === 'kiloan' ? 'checked' : '' }}
+                                        class="form-radio text-blue-600 border-gray-300">
+                                    <span>Kiloan</span>
+                                </label>
+                                <label class="flex items-center space-x-2 text-sm">
+                                    <input type="radio" name="type" value="satuan"
+                                        {{ request('type') === 'satuan' ? 'checked' : '' }}
+                                        class="form-radio text-blue-600 border-gray-300">
+                                    <span>Satuan</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="text-sm text-gray-700 space-y-1">
-                        <span class="font-semibold">Pesanan</span>
-                        @if($order->type === 'satuan')
-                            <div class="text-sm text-gray-700 space-y-1">
-                                @if($order->baju)
-                                    <p class="flex justify-between"><span>Baju:</span> <span>{{ $order->baju }} pcs</span></p>
-                                @endif
-                                @if($order->celana)
-                                    <p class="flex justify-between"><span>Celana:</span> <span>{{ $order->celana }} pcs</span>
-                                    </p>
-                                @endif
-                                @if($order->jaket)
-                                    <p class="flex justify-between"><span>Jaket:</span> <span>{{ $order->jaket }} pcs</span></p>
-                                @endif
-                                @if($order->gaun)
-                                    <p class="flex justify-between"><span>Gaun:</span> <span>{{ $order->gaun }} pcs</span></p>
-                                @endif
-                                @if($order->sprey_kasur)
-                                    <p class="flex justify-between"><span>Sprei Kasur:</span> <span>{{ $order->sprey_kasur }}
-                                            pcs</span></p>
-                                @endif
-                            </div>
-                        @elseif($order->type === 'kiloan')
-                            <div class="text-sm text-gray-700 space-y-1">
-                                <p class="flex justify-between">
-                                    <span>Berat:</span>
-                                    <span>{{ $order->weight }} kg</span>
-                                </p>
-                            </div>
-                        @endif
-                    </div>
+                    {{-- Tombol --}}
+                    <div class="space-y-2">
+                        <button type="submit"
+                            class="w-full py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium">
+                            Terapkan Filter
+                        </button>
 
-                    <p class="flex justify-between font-medium text-gray-700">
-                        <span>Layanan:</span>
-                        <span>{{ ucfirst(str_replace('_', ' ', $order->service_type)) }}</span>
-                    </p>
-
-                    <p class="flex justify-between font-medium text-gray-700">
-                        <span>Antar/Jemput:</span>
-                        <span>{{ ucfirst($order->delivery_option) }}</span>
-                    </p>
-
-                    <form action="{{ route('mindashboard.order.update', $order->id) }}" method="POST"
-                        class="flex justify-between items-center font-semibold">
-                        @csrf
-                        @method('PUT')
-                        <label for="status" class="mr-2">Update Status:</label>
-                        <select name="status" onchange="this.form.submit()"
-                            class="text-xs font-semibold px-3 py-1 rounded-full text-white {{ $order->status === 'menunggu' ? 'bg-amber-400' : ($order->status === 'dijemput' ? 'bg-orange-400' : ($order->status === 'diproses' ? 'bg-sky-500' : ($order->status === 'selesai' ? 'bg-emerald-500' : 'bg-rose-400'))) }}">
-
-                            <option value="menunggu" {{ $order->status === 'menunggu' ? 'selected' : '' }}>Menunggu
-                            </option>
-
-                            {{-- Hanya tampilkan jika antar/jemput = jemput --}}
-                            @if($order->delivery_option === 'jemput')
-                                <option value="dijemput" {{ $order->status === 'dijemput' ? 'selected' : '' }}>Dijemput
-                                </option>
-                            @endif
-
-                            <option value="diproses" {{ $order->status === 'diproses' ? 'selected' : '' }}>Diproses
-                            </option>
-                            <option value="selesai" {{ $order->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="dibatalkan" {{ $order->status === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan
-                            </option>
-                        </select>
-                    </form>
-
-                    <p class="flex justify-between font-semibold text-gray-900 text-lg">
-                        <span>Total:</span>
-                        <span>Rp {{ number_format($order->total, 0, ',', '.') }}</span>
-                    </p>
-
-                    <p class="text-xs text-gray-500 italic">
-                        {{ $order->description }}
-                    </p>
-
-                    <div class="flex justify-between items-center text-xs text-gray-400 italic">
-                        <a href="{{ route('mindashboard.order.show', $order->id) }}"
-                            class="text-blue-500 hover:underline font-medium not-italic">
-                            Lihat Detail
+                        <a href="{{ route('mindashboard.order.index') }}"
+                            class="block w-full text-center text-xs text-red-600 hover:underline">
+                            Reset Filter
                         </a>
-
-                        <p class="text-right">
-                            {{ $order->created_at->format('d M Y, H:i') }}
-                        </p>
                     </div>
+                </form>
+            </div>
+
+            {{-- Main Content --}}
+            <div class="md:col-span-2 lg:col-span-3">
+                <div class="bg-white rounded-lg shadow overflow-x-auto">
+                    <table class="min-w-full text-sm text-left text-gray-700">
+                        <thead class="bg-gray-100 font-semibold">
+                            <tr>
+                                <th class="px-4 py-3">#</th>
+                                <th class="px-4 py-3">Invoice</th>
+                                <th class="px-4 py-3">Nama</th>
+                                <th class="px-4 py-3">Jenis</th>
+                                <th class="px-4 py-3">Detail</th>
+                                <th class="px-4 py-3">Layanan</th>
+                                <th class="px-4 py-3">Antar/Jemput</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Total</th>
+                                <th class="px-4 py-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @forelse ($orders as $i => $order)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3">{{ $orders->firstItem() + $i }}</td>
+                                    <td class="px-4 py-3">{{ $order->midtrans_order_id ?? '-' }}</td>
+                                    <td class="px-4 py-3">{{ $order->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 capitalize">{{ $order->type }}</td>
+                                    <td class="px-4 py-3">
+                                        @if ($order->type === 'satuan')
+                                            <ul class="list-disc ml-5 text-xs">
+                                                @foreach (['baju', 'celana', 'jaket', 'gaun', 'sprey_kasur'] as $item)
+                                                    @if ($order->$item)
+                                                        <li>{{ ucfirst(str_replace('_', ' ', $item)) }}: {{ $order->$item }} pcs</li>
+                                                    @endif
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <span class="text-xs">Berat: {{ $order->weight ?? 0 }} kg</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 capitalize">{{ str_replace('_', ' ', $order->service_type) }}</td>
+                                    <td class="px-4 py-3 capitalize">{{ $order->delivery_option }}</td>
+                                    <td class="px-4 py-3">
+                                        <form action="{{ route('mindashboard.order.update', $order->id) }}" method="POST">
+                                            @csrf @method('PUT')
+
+                                            @foreach(request()->get('status', []) as $filterStatus)
+                                                <input type="hidden" name="status[]" value="{{ $filterStatus }}">
+                                            @endforeach
+                                            @if(request()->filled('type'))
+                                                <input type="hidden" name="type" value="{{ request('type') }}">
+                                            @endif
+
+                                            <select name="status" onchange="this.form.submit()"
+                                                class="text-xs bg-white border border-gray-300 rounded px-2 py-1">
+                                                <option value="menunggu" {{ $order->status === 'menunggu' ? 'selected' : '' }}>Menunggu</option>
+                                                <option value="diproses" {{ $order->status === 'diproses' ? 'selected' : '' }}>Diproses</option>
+                                                @if ($order->delivery_option === 'jemput')
+                                                    <option value="dijemput" {{ $order->status === 'dijemput' ? 'selected' : '' }}>Dijemput</option>
+                                                @endif
+                                                <option value="selesai" {{ $order->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                                <option value="dibatalkan" {{ $order->status === 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td class="px-4 py-3 font-semibold text-gray-900">
+                                        Rp {{ number_format($order->total, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center space-x-2">
+                                            <a href="{{ route('mindashboard.order.show', $order->id) }}"
+                                                class="text-blue-600 hover:underline text-xs">Detail</a>
+
+                                            @if(in_array($order->status, ['menunggu', 'dibatalkan']))
+                                                <form action="{{ route('mindashboard.order.destroy', $order->id) }}" method="POST"
+                                                    onsubmit="return confirm('Yakin ingin menghapus pesanan ini?')">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit"
+                                                        class="text-red-500 hover:underline text-xs">Hapus</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="10" class="text-center italic py-6 text-gray-500">
+                                        Belum ada pesanan ditemukan.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-            @empty
-                <div class="col-span-4 text-center text-gray-500 italic select-none">
-                    Belum ada pesanan laundry satuan.
-                </div>
-            @endforelse
+
+                {{-- PAGINATION --}}
+                @if ($orders->hasPages())
+                    <div class="mt-6 flex justify-center">
+                        {{ $orders->links('vendor.pagination.tailwind') }}
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </x-admin-layout>

@@ -12,6 +12,9 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4 text-gray-700 text-sm">
+            <p><span class="font-medium">Invoice:</span> {{ ucfirst($order->midtrans_order_id) }}</p>
+            <p><span class="font-medium">UserId:</span> {{ ucfirst($order->userId) }}</p>
+            <p><span class="font-medium">Nama:</span> {{ ucfirst($order->name) }}</p>
             <p><span class="font-medium">Jenis:</span> {{ ucfirst($order->type) }}</p>
             <p><span class="font-medium">Antar/Jemput:</span> {{ ucfirst($order->delivery_option) }}</p>
             <p><span class="font-medium">Status Pembayaran:</span> {{ ucfirst($order->status_pembayaran) }}</p>

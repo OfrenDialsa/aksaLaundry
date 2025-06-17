@@ -25,9 +25,9 @@ return new class extends Migration
             $table->enum('delivery_option', ['antar', 'jemput']); // Antar atau jemput
             $table->enum('service_type', ['cuci', 'setrika', 'cuci_setrika'])->default('cuci_setrika');
             $table->text('description')->nullable();
-            $table->integer('total')->default(0);
+            $table->bigInteger('total')->default(0);
             $table->enum('status', ['menunggu', 'dijemput', 'diproses', 'selesai', 'dibatalkan'])->default('menunggu');
-            $table->enum('status_pembayaran', ['unpaid', 'paid'])->default('unpaid');
+            $table->enum('status_pembayaran', ['unpaid', 'pending', 'paid'])->default('unpaid');
             $table->string('midtrans_order_id')->nullable()->unique();
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();

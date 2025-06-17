@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\Dashboard\LocationController;
+use App\Http\Controllers\Dashboard\OurLocationController;
+use App\Http\Controllers\Dashboard\PriceController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MinDashboard\MinLocationController;
 use App\Http\Controllers\MinDashboard\MinOrderController;
 use App\Http\Controllers\MinDashboard\MinPaymentController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PaymentController;
+use App\Http\Controllers\MinDashboard\MinPriceController;
+use App\Http\Controllers\MinDashboard\UsersController;
 use App\Http\Controllers\WelcomePage\AboutController;
 use App\Http\Controllers\WelcomePage\HomeController;
 use App\Http\Controllers\WelcomePage\PricingController;
@@ -42,14 +47,29 @@ Route::prefix('welcome')->name('welcome.')->group(function () {
 
 Route::prefix('dashboard')->name('dashboard.')->middleware(['auth', 'verified'])->group(function () {
     Route::resource('order', OrderController::class)->names('order');
+    Route::get('/ourlocation', [OurLocationController::class, 'index'])->name('ourlocation');
     Route::get('/location', [LocationController::class, 'index'])->name('location');
-    Route::get('/payment', [PaymentController::class, 'index'])->name('payment');
+    Route::resource('payment', PaymentController::class)->names('payment');
+    Route::post('payment/{order}/checkout', [PaymentController::class, 'checkout']);
+
+    Route::get('/prices', [PriceController::class, 'index'])->name('prices.index');
 });
 
 Route::prefix('mindashboard')->name('mindashboard.')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('order', MinOrderController::class)->names('order');
     Route::get('/location', [MinLocationController::class, 'index'])->name('location');
     Route::get('/payment', [MinPaymentController::class, 'index'])->name('payment');
+    Route::resource('/users', UsersController::class)->names('users');
+
+    Route::get('/prices', [MinPriceController::class, 'index'])->name('prices.index');
+    Route::post('/prices/update', [MinPriceController::class, 'update'])->name('prices.update');
 });
 
-require __DIR__.'/auth.php';
+Route::get('/invoice/{order}/download', [InvoiceController::class, 'download'])
+    ->name('invoice.download');
+
+Route::get('/invoice/monthly', [InvoiceController::class, 'downloadMonthlyInvoice'])
+    ->middleware('auth')
+    ->name('invoice.monthly');
+
+require __DIR__ . '/auth.php';
