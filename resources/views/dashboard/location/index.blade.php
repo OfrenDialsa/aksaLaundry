@@ -29,7 +29,7 @@
                     @if ($order->status === 'dijemput')
                         <div class="text-sm font-semibold text-orange-600">🚗 Sedang dijemput...</div>
                     @elseif ($order->status === 'diproses')
-                        <div class="text-sm font-semibold text-blue-600">☑️ Sudah dijemput...</div>
+                        <div class="text-sm font-semibold text-blue-600">~ Sedang di proses...</div>
                     @endif
 
                     @if ($order->latitude && $order->longitude)
